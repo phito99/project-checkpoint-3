@@ -1,5 +1,8 @@
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -94,12 +97,38 @@ public class BTreeMain {
 
     private static List<Student> getStudents() {
 
-        /** TODO:
+        /**
+         * TODO:
          * Extract the students information from "Students.csv"
          * return the list<Students>
          */
 
         List<Student> studentList = new ArrayList<>();
+        try {
+            // setup classes to read in the csv file
+            FileReader fReader = new FileReader("student.csv");
+            BufferedReader bReader = new BufferedReader(fReader);
+            String line = "";
+
+            // loop through the file and break out the data fields, then create Student
+            // objects
+            while ((line = bReader.readLine()) != null) {
+                String[] pieces = line.split(",");
+                Student student = new Student(
+                        (long) Long.valueOf(pieces[0]),
+                        (int) Integer.valueOf(pieces[1]),
+                        pieces[2],
+                        pieces[3],
+                        pieces[4],
+                        (long) Long.valueOf(pieces[5]));
+                studentList.add(student);
+            }
+            bReader.close();
+        } catch (FileNotFoundException e) {
+            System.out.println(e.getMessage());
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
         return studentList;
     }
 }
