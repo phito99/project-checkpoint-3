@@ -30,6 +30,37 @@ class BTree {
          * Otherwise, print out a message that the given studentId has not been found in
          * the table and return -1.
          */
+
+        BTreeNode currNode;
+        boolean found = false;
+
+        if(this.root == null){
+            System.out.println("This is an empty tree");
+            return -1;
+        }
+        
+        currNode = this.root;
+
+        while(!currNode.leaf){
+
+            for(int i = 0; i < currNode.keys.length; i++){
+                if(studentId <= currNode.keys[i])                //children[0] have values < keys[0]; keys[0] < children[1] < keys [1]... keys[2*t-1] < children[2*t]
+                    currNode=currNode.children[i];
+                    break;
+                }
+                else if(i == currNode.keys.length - 1){
+                    currNode = currNode.children[i+1];
+                }
+            }
+        }
+
+        for(int k = 0; k < currNode.keys.length; k++){
+            if(studentId == currNode.keys[k]){
+                return currNode.values.[k];
+            }
+        }
+
+        System.out.println("Could not find student with that ID");
         return -1;
     }
 

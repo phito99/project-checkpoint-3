@@ -128,8 +128,34 @@ public class BTreeMain {
 
     public static long generateNextId(BTree bTree) {
         long output = 0;
+        BTreeNode currNode;
         // TODO implement search to find max record id and increment by 1 and return it
         // as output
+        if (bTree.root == null)
+            output = 1;
+        else{
+            currNode = bTree.root;
+
+            while(!currNode.leaf){
+
+                for(i = currNode.keys.length - 1; i >= 0; i--){
+                    if(currNode.keys[i] != 0){
+                        currNode = currNode.children[i+1];
+                        break;
+                    }
+                    //else if(i == 0 && currNode.children[i+1] is not defined)
+                    //  currNode=currNode.children[0]
+                }
+            }
+
+            for(k = currNode.values.length - 1; k >= 0; k--){
+                if(currNode.values[k] != 0){
+                    output = currNode.values[k] + 1;
+                    break;
+                }
+            }
+
+        }
         return output;
     }
 }
