@@ -21,4 +21,18 @@ public class Student {
         this.level = level;
         this.recordId = recordId;
     }
+
+    /**
+     * Function to convert a Student object to a string that can be inserted into
+     * student.csv database
+     * 
+     * @return comma delimited String of Student attributes
+     */
+    public String toCSV() {
+        String output = "";
+        String dl = ",";
+        output = output + this.studentId + dl + this.age + dl + this.studentName + dl + this.major + dl + this.level
+                + dl + this.recordId;
+        return output;
+    }
 }
