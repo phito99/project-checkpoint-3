@@ -28,14 +28,14 @@ public class BTreeMain {
 
         BTree bTree = new BTree(degree);
 
-        /** Reading the database student.csv into B+Tree Node*/
+        /** Reading the database student.csv into B+Tree Node */
         List<Student> studentsDB = getStudents();
 
         for (Student s : studentsDB) {
             bTree.insert(s);
         }
 
-        /** Start reading the operations now from input file*/
+        /** Start reading the operations now from input file */
         try {
             while (scan.hasNextLine()) {
                 Scanner s2 = new Scanner(scan.nextLine());
@@ -52,8 +52,8 @@ public class BTreeMain {
                             String major = s2.next();
                             String level = s2.next();
                             int age = Integer.parseInt(s2.next());
-                            /** TODO: Write a logic to generate recordID*/
-                            long recordID = ;
+                            /** TODO: Write a logic to generate recordID */
+                            long recordID = generateNextId(bTree);
 
                             Student s = new Student(studentId, age, studentName, major, level, recordID);
                             bTree.insert(s);
@@ -97,12 +97,6 @@ public class BTreeMain {
 
     private static List<Student> getStudents() {
 
-        /**
-         * TODO:
-         * Extract the students information from "Students.csv"
-         * return the list<Students>
-         */
-
         List<Student> studentList = new ArrayList<>();
         try {
             // setup classes to read in the csv file
@@ -130,5 +124,12 @@ public class BTreeMain {
             System.out.println(e.getMessage());
         }
         return studentList;
+    }
+
+    public static long generateNextId(BTree bTree) {
+        long output = 0;
+        // TODO implement search to find max record id and increment by 1 and return it
+        // as output
+        return output;
     }
 }

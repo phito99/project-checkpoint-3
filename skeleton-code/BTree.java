@@ -27,7 +27,8 @@ class BTree {
          * TODO:
          * Implement this function to search in the B+Tree.
          * Return recordID for the given StudentID.
-         * Otherwise, print out a message that the given studentId has not been found in the table and return -1.
+         * Otherwise, print out a message that the given studentId has not been found in
+         * the table and return -1.
          */
         return -1;
     }
@@ -55,12 +56,25 @@ class BTree {
 
         List<Long> listOfRecordID = new ArrayList<>();
 
-        /**
-         * TODO:
-         * Implement this function to print the B+Tree.
-         * Return a list of recordIDs from left to right of leaf nodes.
-         *
+        BTreeNode current = this.root;
+        // start at the root and perform a search for the left most (lowest) recordId
+        while (!current.leaf) {
+            current = current.children[0];
+        }
+        /*
+         * once this loop is finished we have the left-most leaf, begin creating list
+         * and printing values
+         * traverse through the linked list of leaf nodes, the end node of the list will
+         * have a null pointer to the next node
          */
+        do {
+            for (int i = 0; i < current.values.length; i++) {
+                listOfRecordID.add(current.values[i]);
+                System.out.println(current.values[i]);
+            }
+            current = current.next;
+        } while (current != null);
+
         return listOfRecordID;
     }
 }
