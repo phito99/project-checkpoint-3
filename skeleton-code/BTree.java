@@ -34,6 +34,7 @@ class BTree {
         BTreeNode currNode;
         boolean found = false;
 
+        //If root is null; tree is empty and return -1
         if(this.root == null){
             System.out.println("This is an empty tree");
             return -1;
@@ -41,6 +42,7 @@ class BTree {
         
         currNode = this.root;
 
+        //while the current node is not a leaf loop through keys and change current node to appropriate branch
         while(!currNode.leaf){
 
             for(int i = 0; i < currNode.keys.length; i++){
