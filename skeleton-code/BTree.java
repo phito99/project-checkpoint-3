@@ -89,12 +89,12 @@ class BTree {
         }
         // now need to perform the insert on the leaf node we have identified
         // first case, leaf node has space
-        if (current.keys.length < maxCapacity) {
+        if (current.n < maxCapacity) {
             long[] newKeys = new long[2 * t - 1];
             long[] newVals = new long[2 * t - 1];
             int idx = 0;
             for (int i = 0; i < current.keys.length; i++) {
-                if (student.recordId < current.keys[i]) {
+                if (student.studentId < current.keys[i]) {
                     idx = i;
                 }
             }
@@ -116,6 +116,17 @@ class BTree {
             current.values = newVals;
         } else {
             // TODO implement the splitting insert logic
+            // identify the target in the full leaf node to place the new student
+            int idx = 0;
+            boolean checkParent = false; // variable to determine if need to evaluate the parent inner node
+
+            for (int i = 0; i < current.keys.length; i++) {
+                if (student.studentId < current.keys[i]) {
+                    idx = i;
+                }
+            }
+            // prepare arrays to split need a new leaf node
+            BTreeNode newNode = new BTreeNode(current.t, true);
         }
 
         return this;
