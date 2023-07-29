@@ -1,3 +1,4 @@
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,11 +69,7 @@ class BTree {
     }
 
     BTree insert(Student student) {
-        /**
-         * TODO:
-         * Implement this function to insert in the B+Tree.
-         * Also, insert in student.csv after inserting in B+Tree.
-         */
+
         int maxCapacity = this.t * 2; // will use this to compare to this.n
         // start at the root node of the tree and find insert place
         BTreeNode current = this.root;
@@ -167,7 +164,7 @@ class BTree {
 
             // update the parent node if there is no overflow
             if (!checkParent) {
-                long pushedId = newNode.keys[0]; // node to be copied up
+                long pushedId = newNode.keys[0]; // key to be copied up
                 idx = 0; // reset to find new area to insert
                 for (int i = 0; i < current.parent.n; i++) {
                     if (pushedId > current.parent.keys[i]) {
@@ -182,10 +179,89 @@ class BTree {
                 current.parent.children[idx] = current;
                 current.parent.children[idx + 1] = newNode;
             }
-
+            // continue checking and fixing upwards if parent is at capacity
+            BTreeNode existing = current;
+            current = current.parent;
+            long pushedId = newNode.keys[0];
             while (checkParent) {
+                idx = 0;
+                // array of keys with overflow to help with array manipulation
+                ArrayList<Long> keyArrayList = new ArrayList<>();
+                ArrayList<BTreeNode> childrenArrayList = new ArrayList<>();
+                // find the index to insert the new key and populate keyArrayList
+                for (int i = 0; i < current.n; i++) {
+                    if (pushedId > current.keys[i]) {
+                        idx++;
+                    }
+                    keyArrayList.add(i, current.keys[i]);
+                }
+                keyArrayList.add(idx, pushedId);
 
+                int childIdx = 0;
+                // update the arraylist of all the children nodes to be redistributed with split
+                for (int i = 0; i < current.children.length; i++) {
+                    if (newNode.keys[0] > current.children[i].keys[0]) {
+                        childIdx++;
+                    }
+                    childrenArrayList.add(current.children[i]);
+                }
+                childrenArrayList.add(childIdx, newNode);
+
+                BTreeNode newInner = new BTreeNode(current.t, false);
+                newInner.n = (current.t);
+                newInner.parent = current.parent; // attach to the same parent, will need to update parent.children
+                // populate the old inner parent node with d keys
+                for (int i = 0; i < current.t; i++) {
+                    current.keys[i] = keyArrayList.get(i);
+                }
+                // populate the newly created inner node with d keys
+                for (int i = t + 1; i < maxCapacity; i++) {
+                    newInner.keys[i] = keyArrayList.get(i);
+                }
+                pushedId = keyArrayList.get(current.t); // get the key to push into the next level for next iteration
+
+                // update the children nodes between the old and new inner nodes
+                for (int i = 0; i < childrenArrayList.size(); i++) {
+                    if (i < childrenArrayList.size() / 2) {
+                        current.children[i] = childrenArrayList.get(i);
+                    } else {
+                        newInner.children[i - (childrenArrayList.size() / 2)] = childrenArrayList.get(i);
+                    }
+                }
+
+                // now determine how to handle the new pushedId (no parent, not at 2d, at 2d)
+                if (current.parent == null) {
+                    BTreeNode newRoot = new BTreeNode(current.t, false);
+                    newRoot.children[0] = existing;
+                    newRoot.children[1] = newInner;
+                    newRoot.keys[0] = pushedId;
+                    newRoot.n = 1;
+                    current.parent = newRoot;
+                    newInner.parent = newRoot;
+                    checkParent = false;
+                } else if (current.parent.n < maxCapacity) {
+                    ArrayList<Long> parentKeys = new ArrayList<>();
+                    for (int i = 0; i < current.parent.n; i++) {
+                        parentKeys.add(current.parent.keys[i]);
+                    }
+                    // TODO finish updating parent node
+
+                    checkParent = false;
+                } else {
+                    newNode = newInner;
+                    existing = current;
+                    current = current.parent;
+                }
             }
+        }
+
+        // write new student into Student.csv
+        try {
+            FileWriter fWriter = new FileWriter("Student.csv", true);
+            fWriter.write(student.toCSV());
+            fWriter.close();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
 
         return this;
