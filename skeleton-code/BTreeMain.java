@@ -2,6 +2,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -98,6 +99,7 @@ public class BTreeMain {
     private static List<Student> getStudents() {
 
         List<Student> studentList = new ArrayList<>();
+        long max = 0;
         try {
             // setup classes to read in the csv file
             FileReader fReader = new FileReader("student.csv");
@@ -116,10 +118,22 @@ public class BTreeMain {
                         pieces[4],
                         (long) Long.valueOf(pieces[5]));
                 studentList.add(student);
+                long rId = (long) Long.valueOf(pieces[5]);
+                if (rId > max) {
+                    max = rId;
+                }
+
             }
             bReader.close();
         } catch (FileNotFoundException e) {
             System.out.println(e.getMessage());
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+        try {
+            FileWriter fWriter = new FileWriter("recordID.txt");
+            fWriter.write((int) (max));
+            fWriter.close();
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }

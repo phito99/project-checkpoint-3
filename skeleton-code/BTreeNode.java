@@ -19,7 +19,7 @@ class BTreeNode {
      */
     BTreeNode[] children;
     /**
-     * number of key-value pairs in the B-tree
+     * number of key-value pairs in the B-tree node
      */
     int n;
     /**
