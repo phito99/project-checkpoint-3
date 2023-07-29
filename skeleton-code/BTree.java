@@ -156,4 +156,8 @@ class BTree {
 
         return listOfRecordID;
     }
+
+    public BTreeNode getRoot() {
+        return this.getRoot();
+    }
 }
