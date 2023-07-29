@@ -73,7 +73,7 @@ class BTree {
          * Implement this function to insert in the B+Tree.
          * Also, insert in student.csv after inserting in B+Tree.
          */
-        int maxCapacity = this.t * 2; // will use this to compare to this.keys.length
+        int maxCapacity = this.t * 2; // will use this to compare to this.n
         // start at the root node of the tree and find insert place
         BTreeNode current = this.root;
         while (!current.leaf) {
@@ -88,11 +88,14 @@ class BTree {
 
         }
         // now need to perform the insert on the leaf node we have identified
+        int idx = 0;
+        boolean checkParent = false; // variable to determine if need to evaluate the parent inner node
+
         // first case, leaf node has space
         if (current.n < maxCapacity) {
             long[] newKeys = new long[2 * t - 1];
             long[] newVals = new long[2 * t - 1];
-            int idx = 0;
+
             for (int i = 0; i < current.keys.length; i++) {
                 if (student.studentId < current.keys[i]) {
                     idx = i;
@@ -115,18 +118,74 @@ class BTree {
             current.keys = newKeys;
             current.values = newVals;
         } else {
-            // TODO implement the splitting insert logic
-            // identify the target in the full leaf node to place the new student
-            int idx = 0;
-            boolean checkParent = false; // variable to determine if need to evaluate the parent inner node
+            // second case where leaf is full and need to split
 
+            // identify area the new student key fits
             for (int i = 0; i < current.keys.length; i++) {
-                if (student.studentId < current.keys[i]) {
-                    idx = i;
+                if (student.studentId > current.keys[i]) {
+                    idx++;
                 }
             }
-            // prepare arrays to split need a new leaf node
+            // prepare new leaf node this gives the new arrays needed
             BTreeNode newNode = new BTreeNode(current.t, true);
+            newNode.n = (current.t + 1);
+            newNode.parent = current.parent; // attach to the same parent, will need to update parent.children
+
+            int increment = 0; // used to help write existing "overflowing" data into new arrays
+            // store the existing keys and values to populate into nodes alongside the
+            // update
+            long[] bufferKey = current.keys;
+            long[] bufferVal = current.values;
+            current.n = current.t; // reduce the number of keys stored in the node to post split value
+
+            for (int i = 0; i < (maxCapacity / 2); i++) {
+                if (i == idx) {
+                    current.keys[i] = student.studentId;
+                    current.values[i] = student.recordId;
+                    increment = 1;
+                } else {
+                    current.keys[i] = bufferKey[i - increment];
+                    current.values[i] = bufferVal[i - increment];
+                }
+            }
+            // now update the new node, need to adjust the index of where values are set
+            // from the buffer
+            for (int i = (maxCapacity / 2); i < maxCapacity; i++) {
+                if (i == idx) {
+                    newNode.keys[i - (maxCapacity / 2)] = student.studentId;
+                    newNode.values[i - (maxCapacity / 2)] = student.recordId;
+                    increment = 1;
+                } else {
+                    newNode.keys[i - (maxCapacity / 2)] = bufferKey[i - increment];
+                    newNode.values[i - (maxCapacity / 2)] = bufferVal[i - increment];
+                }
+            }
+            // now determine if parent nodes need to be corrected
+            if (current.parent.n == maxCapacity) {
+                checkParent = true;
+            }
+
+            // update the parent node if there is no overflow
+            if (!checkParent) {
+                long pushedId = newNode.keys[0]; // node to be copied up
+                idx = 0; // reset to find new area to insert
+                for (int i = 0; i < current.parent.n; i++) {
+                    if (pushedId > current.parent.keys[i]) {
+                        idx++;
+                    }
+                }
+                for (int i = current.parent.keys.length; i >= idx; i--) {
+                    current.parent.keys[i] = current.parent.keys[i - 1]; // make space for new key
+                    current.parent.children[i + 1] = current.parent.children[i]; // make space for new child node
+                }
+                current.parent.keys[idx] = pushedId;
+                current.parent.children[idx] = current;
+                current.parent.children[idx + 1] = newNode;
+            }
+
+            while (checkParent) {
+
+            }
         }
 
         return this;

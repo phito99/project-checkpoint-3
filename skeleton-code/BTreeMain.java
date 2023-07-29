@@ -129,12 +129,18 @@ public class BTreeMain {
             System.out.println(e.getMessage());
         } catch (IOException e) {
             System.out.println(e.getMessage());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
+        // setup the convention to write the current recordID to disk for generateNextId
+        // logic
         try {
             FileWriter fWriter = new FileWriter("recordID.txt");
             fWriter.write((int) (max));
             fWriter.close();
         } catch (IOException e) {
+            System.out.println(e.getMessage());
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
         return studentList;
