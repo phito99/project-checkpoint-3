@@ -7,7 +7,7 @@ import java.util.List;
  * Key - StudentId
  * Leaf Node should contain [ key,recordId ]
  */
-class BTree {
+public class BTree {
 
     /**
      * Pointer to the root node.
@@ -18,12 +18,12 @@ class BTree {
      **/
     private int t;
 
-    BTree(int t) {
+    public BTree(int t) {
         this.root = null;
         this.t = t;
     }
 
-    long search(long studentId) {
+    public long search(long studentId) {
         /**
          * TODO:
          * Implement this function to search in the B+Tree.
@@ -68,7 +68,7 @@ class BTree {
         return -1;
     }
 
-    BTree insert(Student student) {
+    public BTree insert(Student student) {
 
         int maxCapacity = this.t * 2; // will use this to compare to this.n
         // setup from no root
@@ -291,7 +291,7 @@ class BTree {
 
         // write new student into Student.csv
         try {
-            FileWriter fWriter = new FileWriter("skeleton-code/Student.csv", true);
+            FileWriter fWriter = new FileWriter("Student.csv", true);
             fWriter.write(student.toCSV());
             fWriter.close();
         } catch (Exception e) {
@@ -301,17 +301,14 @@ class BTree {
         return this;
     }
 
-    boolean delete(long studentId) {
-     /**
-         * TODO:
-         * Implement this function to delete in the B+Tree.
-         * Also, delete in student.csv after deleting in B+Tree, if it exists.
-         * Return true if the student is deleted successfully otherwise, return false.
-         */
+    public boolean delete(long studentId) {
+
         int success;
-        success = this.recurseDelete(this.root,this.root,studentId,0);
-        if (success == -1){
-            return true;
+        try{
+            success = this.recurseDelete(this.root,this.root,studentId,0);
+        } catch(Exception e){
+            System.out.println(e);
+            return false;
         }
 
         
@@ -319,6 +316,10 @@ class BTree {
     }
 
     int recurseDelete(BTreeNode parent, BTreeNode currNode, long entry, int currNodePos){
+
+        //System.out.println( "Let's see how deep the error is");
+        //System.out.println(entry);
+        //this.print();
 
         //Variable to pass position of child node to delete
         //-1 if there is no child to delete
@@ -524,9 +525,11 @@ class BTree {
                     sibling = parent.children[currNodePos-1];
                     hasExtras = sibling.n - 1 >= parent.t;
                 }
-                if (currNodePos == 0 || (!hasExtras && currNodePos != parent.t * 2)){
+                if ((currNodePos == 0 || !hasExtras) && currNodePos != parent.t * 2){
                     siblingNodePos=currNodePos+1;
                     sibling = parent.children[currNodePos + 1];
+                    //System.out.println("Sibling Node Post: "+ siblingNodePos +"\nParent.t: "+parent.n);
+                    //System.out.println(sibling);
                     hasExtras = sibling.n - 1 >= parent.t;
                 }
 
@@ -648,7 +651,7 @@ class BTree {
         return;
     }
 
-    List<Long> print() {
+    public List<Long> print() {
 
         List<Long> listOfRecordID = new ArrayList<>();
 

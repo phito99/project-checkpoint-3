@@ -102,7 +102,7 @@ public class BTreeMain {
         long max = 0;
         try {
             // setup classes to read in the csv file
-            FileReader fReader = new FileReader("skeleton-code/Student.csv");
+            FileReader fReader = new FileReader("Student.csv");
             BufferedReader bReader = new BufferedReader(fReader);
             String line = "";
 
@@ -150,7 +150,7 @@ public class BTreeMain {
        // variable declaration
        int ch;
        String stream = "";
-       int recID;
+       long recID;
 
        // check if File exists or not
        try
@@ -169,13 +169,14 @@ public class BTreeMain {
             System.out.println(e.getMessage());
         }
 
-       recID = Integer.parseInt(stream);
+        System.out.println(stream);
+       recID = Long.parseLong(stream);
 
        recID++;
 
        try{
         FileWriter fWriter = new FileWriter("recordID.txt");
-        fWriter.write((int)(recID));
+        fWriter.write((String)(Long.toString(recID)));
         fWriter.close();
        }
         catch (IOException e) {

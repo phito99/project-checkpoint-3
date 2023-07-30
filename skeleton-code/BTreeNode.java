@@ -1,4 +1,4 @@
-class BTreeNode {
+public class BTreeNode {
 
     /**
      * Array of the keys stored in the node.
