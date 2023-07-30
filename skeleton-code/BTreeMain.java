@@ -18,7 +18,7 @@ public class BTreeMain {
         /** Read the input file -- input.txt */
         Scanner scan = null;
         try {
-            scan = new Scanner(new File("src/input.txt"));
+            scan = new Scanner(new File("skeleton-code/input.txt"));
         } catch (FileNotFoundException e) {
             System.out.println("File not found.");
         }
@@ -147,38 +147,35 @@ public class BTreeMain {
     }
 
     public static long generateNextId(BTree bTree) {
-       // variable declaration
-       int ch;
-       String stream = "";
-       int recID;
+        // variable declaration
+        int ch;
+        String stream = "";
+        int recID;
 
-       // check if File exists or not
-       try
-       {
+        // check if File exists or not
+        try {
             FileReader fReader = new FileReader("recordID.txt");
             // read from FileReader till the end of file
-            while ((ch=fReader.read())!=-1)
-                stream = stream + (char)ch;
+            while ((ch = fReader.read()) != -1)
+                stream = stream + (char) ch;
 
             // close the file
             fReader.close();
-       }
-       catch (IOException e) {
+        } catch (IOException e) {
             System.out.println(e.getMessage());
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
 
-       recID = Integer.parseInt(stream);
+        recID = Integer.parseInt(stream);
 
-       recID++;
+        recID++;
 
-       try{
-        FileWriter fWriter = new FileWriter("recordID.txt");
-        fWriter.write((int)(recID));
-        fWriter.close();
-       }
-        catch (IOException e) {
+        try {
+            FileWriter fWriter = new FileWriter("recordID.txt");
+            fWriter.write(String.valueOf(recID));
+            fWriter.close();
+        } catch (IOException e) {
             System.out.println(e.getMessage());
         } catch (Exception e) {
             System.out.println(e.getMessage());
