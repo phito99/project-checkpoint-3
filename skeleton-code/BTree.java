@@ -86,6 +86,7 @@ class BTree {
                     target++;
                 }
             }
+            target = (target - maxCapacity) + current.n;
             current = current.children[target];
 
         }
@@ -195,9 +196,9 @@ class BTree {
                     }
                 }
 
-                idx = (idx - (maxCapacity)) + current.parent.n; // normalize idx
+                // idx = (idx - (maxCapacity)) + current.parent.n; // normalize idx
 
-                for (int i = current.parent.keys.length; i >= idx; i--) {
+                for (int i = (current.parent.keys.length - 1); i > idx; i--) {
                     current.parent.keys[i] = current.parent.keys[i - 1]; // make space for new key
                     current.parent.children[i + 1] = current.parent.children[i]; // make space for new child node
                 }
