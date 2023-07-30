@@ -300,188 +300,186 @@ class BTree {
     }
 
     boolean delete(long studentId) {
-     /**
+        /**
          * TODO:
          * Implement this function to delete in the B+Tree.
          * Also, delete in student.csv after deleting in B+Tree, if it exists.
          * Return true if the student is deleted successfully otherwise, return false.
          */
         int success;
-        success = this.recurseDelete(this.root,this.root,studentId,0);
-        if (success == -1){
+        success = this.recurseDelete(this.root, this.root, studentId, 0);
+        if (success == -1) {
             return true;
         }
 
-        
         return true;
     }
 
-    int recurseDelete(BTreeNode parent, BTreeNode currNode, long entry, int currNodePos){
+    int recurseDelete(BTreeNode parent, BTreeNode currNode, long entry, int currNodePos) {
 
-        //Variable to pass position of child node to delete
-        //-1 if there is no child to delete
+        // Variable to pass position of child node to delete
+        // -1 if there is no child to delete
         int delChild = -1;
 
-        //Node at same level as currNode to use when deleting branches
+        // Node at same level as currNode to use when deleting branches
         BTreeNode sibling = null;
 
-        //Array position of sibling in parent.children
+        // Array position of sibling in parent.children
         int siblingNodePos = 0;
 
-        //boolean to track if sibling can remove an entry
+        // boolean to track if sibling can remove an entry
         boolean hasExtras = false;
 
-        //boolean to track if the entry has been removed from the tree;
+        // boolean to track if the entry has been removed from the tree;
         boolean removed = false;
 
-        //temp variables for interchanging values
+        // temp variables for interchanging values
         long moveKey;
         long moveVal;
         BTreeNode moveChild;
 
-        if (!currNode.leaf){
+        if (!currNode.leaf) {
 
-            //Find the child node that has a range of keys that match entry
-            for (int i = 0; i < currNode.n-1; i++){
-                if (entry < currNode.keys[i]){
-                    delChild = recurseDelete(currNode, currNode.children[i],entry,i);
-                }
-                else if ( i == currNode.n-1){
-                    delChild = recurseDelete(currNode, currNode.children[i+1],entry,i+1);
+            // Find the child node that has a range of keys that match entry
+            for (int i = 0; i < currNode.n - 1; i++) {
+                if (entry < currNode.keys[i]) {
+                    delChild = recurseDelete(currNode, currNode.children[i], entry, i);
+                } else if (i == currNode.n - 1) {
+                    delChild = recurseDelete(currNode, currNode.children[i + 1], entry, i + 1);
                 }
             }
 
-            //if there is no child to delete return
-            if (delChild == -1){
+            // if there is no child to delete return
+            if (delChild == -1) {
                 return -1;
             }
 
-            //if there is a child node that needs to be deleted
-            else{
+            // if there is a child node that needs to be deleted
+            else {
 
-                //delete child from node
+                // delete child from node
                 currNode.children[delChild] = null;
 
-                //move values in children[] and keys[] one index forward; make last index null or 0
-                for (int j = delChild+1; j <= currNode.n; j++){
-                    currNode.children[j-1] = currNode.children[j];
-                    if (j == currNode.n){
+                // move values in children[] and keys[] one index forward; make last index null
+                // or 0
+                for (int j = delChild + 1; j <= currNode.n; j++) {
+                    currNode.children[j - 1] = currNode.children[j];
+                    if (j == currNode.n) {
                         currNode.children[j] = null;
                     }
-                    if (j < currNode.n){
-                        currNode.keys[j-1] = currNode.keys[j];
+                    if (j < currNode.n) {
+                        currNode.keys[j - 1] = currNode.keys[j];
                     }
-                    if (j == currNode.n-1){
+                    if (j == currNode.n - 1) {
                         currNode.keys[j] = 0;
                     }
                 }
                 currNode.n--;
 
-                //if the node still meets minimum entry req, return
-                if (currNode.n >= currNode.t){
+                // if the node still meets minimum entry req, return
+                if (currNode.n >= currNode.t) {
                     return -1;
                 }
 
-                //if node does not have enough remaining keys; get a sibling node
-                else{
-                    if (currNodePos != 0){
-                        siblingNodePos=currNodePos-1;
-                        sibling = parent.children[currNodePos-1];
+                // if node does not have enough remaining keys; get a sibling node
+                else {
+                    if (currNodePos != 0) {
+                        siblingNodePos = currNodePos - 1;
+                        sibling = parent.children[currNodePos - 1];
                         hasExtras = sibling.n - 1 >= parent.t;
                     }
-                    if (currNodePos == 0 || (!hasExtras && currNodePos != parent.t * 2)){
-                        siblingNodePos=currNodePos+1;
+                    if (currNodePos == 0 || (!hasExtras && currNodePos != parent.t * 2)) {
+                        siblingNodePos = currNodePos + 1;
                         sibling = parent.children[currNodePos + 1];
                         hasExtras = sibling.n - 1 >= parent.t;
                     }
-                    
-                    //if sibling node can spare a key; move it to currNode
-                    if(hasExtras){
-                        
-                        //insert key and child from back of sibling to front of currNode
-                        if (siblingNodePos < currNodePos){
-                            moveKey = sibling.keys[sibling.n-1];
+
+                    // if sibling node can spare a key; move it to currNode
+                    if (hasExtras) {
+
+                        // insert key and child from back of sibling to front of currNode
+                        if (siblingNodePos < currNodePos) {
+                            moveKey = sibling.keys[sibling.n - 1];
                             moveChild = sibling.children[sibling.n];
-                            sibling.keys[sibling.n-1]=0;
-                            sibling.children[sibling.n]=null;
+                            sibling.keys[sibling.n - 1] = 0;
+                            sibling.children[sibling.n] = null;
                             sibling.n--;
 
-                            for(int j = currNode.n-1; j <= 0; j--){
-                                currNode.children[j+1] = currNode.children[j];
-                                if (j > 0){
-                                    currNode.keys[j] = currNode.keys[j-1];
+                            for (int j = currNode.n - 1; j <= 0; j--) {
+                                currNode.children[j + 1] = currNode.children[j];
+                                if (j > 0) {
+                                    currNode.keys[j] = currNode.keys[j - 1];
                                 }
-                                if(j == 0){
+                                if (j == 0) {
                                     currNode.children[j] = moveChild;
                                     currNode.keys[j] = moveKey;
                                 }
                             }
                             currNode.n++;
 
-                            //set parent key to first key in currNode
+                            // set parent key to first key in currNode
                             parent.keys[currNodePos] = currNode.keys[0];
                         }
 
-                        //insert key and child from front of sibling to back of currNode
-                        else{
+                        // insert key and child from front of sibling to back of currNode
+                        else {
                             moveKey = sibling.keys[0];
                             moveChild = sibling.children[0];
-                            currNode.keys[currNode.n-1] = moveKey;
+                            currNode.keys[currNode.n - 1] = moveKey;
                             currNode.children[currNode.n] = moveChild;
                             currNode.n++;
-                            //set parent key to second key in sibling
+                            // set parent key to second key in sibling
                             parent.keys[currNodePos] = sibling.keys[1];
 
-                            for (int j = 1; j <= sibling.n; j++){
-                                sibling.children[j-1] = sibling.children[j];
-                                if (j == sibling.n){
+                            for (int j = 1; j <= sibling.n; j++) {
+                                sibling.children[j - 1] = sibling.children[j];
+                                if (j == sibling.n) {
                                     sibling.children[j] = null;
                                 }
-                                if (j < sibling.n){
-                                    sibling.keys[j-1] = sibling.keys[j];
+                                if (j < sibling.n) {
+                                    sibling.keys[j - 1] = sibling.keys[j];
                                 }
-                                if (j == sibling.n-1){
+                                if (j == sibling.n - 1) {
                                     sibling.keys[j] = 0;
                                 }
                             }
                             sibling.n--;
 
                         }
-                        
+
                         parent.children[currNodePos] = currNode;
                         parent.children[siblingNodePos] = sibling;
                         return -1;
                     }
 
-                    //if the sibling node would not meet minimum reqs; merge currNode and sibling
-                    else{
+                    // if the sibling node would not meet minimum reqs; merge currNode and sibling
+                    else {
                         BTreeNode[] childCombo = new BTreeNode[2 * t + 1];
                         long[] keysCombo = new long[2 * t];
 
-                        if (siblingNodePos < currNodePos){
-                            combineChildren(sibling.children,currNode.children,childCombo);
-                            combineKeys(sibling.keys,currNode.keys,keysCombo);
+                        if (siblingNodePos < currNodePos) {
+                            combineChildren(sibling.children, currNode.children, childCombo);
+                            combineKeys(sibling.keys, currNode.keys, keysCombo);
                             sibling.children = childCombo;
                             sibling.keys = keysCombo;
                             sibling.n = sibling.n + currNode.n;
 
                             long tempKey = parent.keys[currNodePos];
                             parent.keys[currNodePos] = sibling.keys[sibling.n - 1];
-                            sibling.keys[sibling.n-1] = tempKey;
+                            sibling.keys[sibling.n - 1] = tempKey;
 
                             parent.children[siblingNodePos] = sibling;
                             return currNodePos;
-                        }
-                        else{
-                            combineChildren(currNode.children,sibling.children,childCombo);
-                            combineKeys(currNode.keys,sibling.keys,keysCombo);
+                        } else {
+                            combineChildren(currNode.children, sibling.children, childCombo);
+                            combineKeys(currNode.keys, sibling.keys, keysCombo);
                             sibling.children = childCombo;
                             sibling.keys = keysCombo;
                             sibling.n = sibling.n + currNode.n;
 
                             long tempKey = parent.keys[siblingNodePos];
                             parent.keys[siblingNodePos] = sibling.keys[sibling.n - 1];
-                            sibling.keys[sibling.n-1] = tempKey;
+                            sibling.keys[sibling.n - 1] = tempKey;
 
                             parent.children[currNodePos] = sibling;
                             return siblingNodePos;
@@ -491,85 +489,84 @@ class BTree {
                 }
 
             }
-        }
-        else{
+        } else {
 
-            for (int i = 0; i < currNode.n; i++){
-                if(currNode.keys[i] == entry){
+            for (int i = 0; i < currNode.n; i++) {
+                if (currNode.keys[i] == entry) {
                     currNode.keys[i] = 0;
                     currNode.values[i] = 0;
                     removed = true;
                 }
-                if(removed){
-                    if (i + 1 < currNode.n){
-                        currNode.keys[i] = currNode.keys[i+1];
-                        currNode.values[i] = currNode.keys[i+1];
+                if (removed) {
+                    if (i + 1 < currNode.n) {
+                        currNode.keys[i] = currNode.keys[i + 1];
+                        currNode.values[i] = currNode.keys[i + 1];
                     }
                 }
             }
             currNode.n--;
 
-            //if node meets minimum reqs, return
-            if (currNode.n-1 >= t){
+            // if node meets minimum reqs, return
+            if (currNode.n - 1 >= t) {
                 return -1;
             }
 
-            //if leaf cannot spare an entry
-            else{
-                //get a sibling entry
-                if (currNodePos != 0){
-                    siblingNodePos=currNodePos-1;
-                    sibling = parent.children[currNodePos-1];
+            // if leaf cannot spare an entry
+            else {
+                // get a sibling entry
+                if (currNodePos != 0) {
+                    siblingNodePos = currNodePos - 1;
+                    sibling = parent.children[currNodePos - 1];
                     hasExtras = sibling.n - 1 >= parent.t;
                 }
-                if (currNodePos == 0 || (!hasExtras && currNodePos != parent.t * 2)){
-                    siblingNodePos=currNodePos+1;
+                if (currNodePos == 0 || (!hasExtras && currNodePos != parent.t * 2)) {
+                    siblingNodePos = currNodePos + 1;
                     sibling = parent.children[currNodePos + 1];
                     hasExtras = sibling.n - 1 >= parent.t;
                 }
 
-                //if sibling still meets minimum reqs after dontating one value; donate value
-                if (hasExtras){
+                // if sibling still meets minimum reqs after dontating one value; donate value
+                if (hasExtras) {
 
-                    //insert key and value from back of sibling to front of currNode
-                    if (siblingNodePos < currNodePos){
-                        moveKey = sibling.keys[sibling.n-1];
-                        moveVal = sibling.values[sibling.n-1];
+                    // insert key and value from back of sibling to front of currNode
+                    if (siblingNodePos < currNodePos) {
+                        moveKey = sibling.keys[sibling.n - 1];
+                        moveVal = sibling.values[sibling.n - 1];
                         sibling.n--;
 
-                        for(int j = currNode.n-1; j > 0; j--){
+                        for (int j = currNode.n - 1; j > 0; j--) {
 
-                            currNode.keys[j] = currNode.keys[j-1];
-                            currNode.values[j] = currNode.values[j-1];
+                            currNode.keys[j] = currNode.keys[j - 1];
+                            currNode.values[j] = currNode.values[j - 1];
 
-                            if(j == 0){
+                            if (j == 0) {
                                 currNode.values[j] = moveVal;
                                 currNode.keys[j] = moveKey;
                             }
                         }
                         currNode.n++;
-                        //set parent key to first key in currNode
+                        // set parent key to first key in currNode
                         parent.keys[currNodePos] = currNode.keys[0];
                     }
 
-                    //insert key and value from front of sibling to back of currNode
-                    else{
+                    // insert key and value from front of sibling to back of currNode
+                    else {
                         moveKey = sibling.keys[0];
                         moveVal = sibling.values[0];
 
-                        currNode.keys[currNode.n-1] = moveKey;
-                        currNode.values[currNode.n-1] = moveVal;
+                        currNode.keys[currNode.n - 1] = moveKey;
+                        currNode.values[currNode.n - 1] = moveVal;
                         currNode.n++;
 
-                        //set parent key to second key in sibling
+                        // set parent key to second key in sibling
                         parent.keys[currNodePos] = sibling.keys[1];
 
-                        for (int j = 1; j < sibling.n; j++){
+                        for (int j = 1; j < sibling.n; j++) {
 
-                            sibling.keys[j-1] = sibling.keys[j];
-                            sibling.values[j-1] = sibling.values[j];
+                            sibling.keys[j - 1] = sibling.keys[j];
+                            sibling.values[j - 1] = sibling.values[j];
 
-                            if (j == sibling.n-1){
+                            if (j == sibling.n - 1) {
                                 sibling.keys[j] = 0;
                             }
                         }
@@ -582,35 +579,34 @@ class BTree {
                     return -1;
                 }
 
-                //if sibling does not meet minimum reqs, merge nodes
-                else{
+                // if sibling does not meet minimum reqs, merge nodes
+                else {
                     long[] valsCombo = new long[2 * t];
                     long[] keysCombo = new long[2 * t];
 
-                    if (siblingNodePos < currNodePos){
-                        combineKeys(sibling.values,currNode.values,valsCombo);
-                        combineKeys(sibling.keys,currNode.keys,keysCombo);
+                    if (siblingNodePos < currNodePos) {
+                        combineKeys(sibling.values, currNode.values, valsCombo);
+                        combineKeys(sibling.keys, currNode.keys, keysCombo);
                         sibling.values = valsCombo;
                         sibling.keys = keysCombo;
                         sibling.n = sibling.n + currNode.n;
 
                         long tempKey = parent.keys[currNodePos];
                         parent.keys[currNodePos] = sibling.keys[sibling.n - 1];
-                        sibling.keys[sibling.n-1] = tempKey;
+                        sibling.keys[sibling.n - 1] = tempKey;
 
                         parent.children[siblingNodePos] = sibling;
                         return currNodePos;
-                    }
-                    else{
-                        combineKeys(currNode.values,sibling.values,valsCombo);
-                        combineKeys(currNode.keys,sibling.keys,keysCombo);
+                    } else {
+                        combineKeys(currNode.values, sibling.values, valsCombo);
+                        combineKeys(currNode.keys, sibling.keys, keysCombo);
                         sibling.values = valsCombo;
                         sibling.keys = keysCombo;
                         sibling.n = sibling.n + currNode.n;
 
                         long tempKey = parent.keys[siblingNodePos];
                         parent.keys[siblingNodePos] = sibling.keys[sibling.n - 1];
-                        sibling.keys[sibling.n-1] = tempKey;
+                        sibling.keys[sibling.n - 1] = tempKey;
 
                         parent.children[currNodePos] = sibling;
                         return siblingNodePos;
@@ -622,24 +618,24 @@ class BTree {
 
     }
 
-    static void combineChildren(BTreeNode[] a, BTreeNode[] b, BTreeNode[] c){
+    static void combineChildren(BTreeNode[] a, BTreeNode[] b, BTreeNode[] c) {
 
-        for (int i = 0; i < a.length; i++){
+        for (int i = 0; i < a.length; i++) {
             c[i] = a[i];
         }
-        for (int i = a.length; i < c.length; i++){
+        for (int i = a.length; i < c.length; i++) {
             c[i] = b[i];
         }
 
         return;
     }
 
-    static void combineKeys(long[] a, long[] b, long[] c){
+    static void combineKeys(long[] a, long[] b, long[] c) {
 
-        for (int i = 0; i < a.length; i++){
+        for (int i = 0; i < a.length; i++) {
             c[i] = a[i];
         }
-        for (int i = a.length; i < c.length; i++){
+        for (int i = a.length; i < c.length; i++) {
             c[i] = b[i];
         }
 
