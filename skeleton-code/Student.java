@@ -32,7 +32,7 @@ public class Student {
         String output = "";
         String dl = ",";
         output = output + this.studentId + dl + this.age + dl + this.studentName + dl + this.major + dl + this.level
-                + dl + this.recordId;
+                + dl + this.recordId + "\n";
         return output;
     }
 }

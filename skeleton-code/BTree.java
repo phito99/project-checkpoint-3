@@ -71,6 +71,11 @@ class BTree {
     BTree insert(Student student) {
 
         int maxCapacity = this.t * 2; // will use this to compare to this.n
+        // setup from no root
+        if (this.root == null) {
+            this.root = new BTreeNode(this.t, true);
+            this.root.n = 0;
+        }
         // start at the root node of the tree and find insert place
         BTreeNode current = this.root;
         while (!current.leaf) {
@@ -90,14 +95,16 @@ class BTree {
 
         // first case, leaf node has space
         if (current.n < maxCapacity) {
-            long[] newKeys = new long[2 * t - 1];
-            long[] newVals = new long[2 * t - 1];
+            long[] newKeys = new long[2 * t];
+            long[] newVals = new long[2 * t];
 
             for (int i = 0; i < current.keys.length; i++) {
-                if (student.studentId < current.keys[i]) {
-                    idx = i;
+                if (student.studentId > current.keys[i]) {
+                    idx++;
                 }
             }
+            // arrays are initialized to 0 so need to normalize
+            idx = (idx - (maxCapacity)) + current.n;
 
             for (int i = 0; i < idx; i++) {
                 newKeys[i] = current.keys[i];
@@ -114,6 +121,7 @@ class BTree {
 
             current.keys = newKeys;
             current.values = newVals;
+            current.n++;
         } else {
             // second case where leaf is full and need to split
 
@@ -264,7 +272,7 @@ class BTree {
 
         // write new student into Student.csv
         try {
-            FileWriter fWriter = new FileWriter("Student.csv", true);
+            FileWriter fWriter = new FileWriter("./Student.csv", true);
             fWriter.write(student.toCSV());
             fWriter.close();
         } catch (Exception e) {

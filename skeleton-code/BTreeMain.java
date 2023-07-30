@@ -102,7 +102,7 @@ public class BTreeMain {
         long max = 0;
         try {
             // setup classes to read in the csv file
-            FileReader fReader = new FileReader("student.csv");
+            FileReader fReader = new FileReader("skeleton-code/Student.csv");
             BufferedReader bReader = new BufferedReader(fReader);
             String line = "";
 
@@ -112,10 +112,10 @@ public class BTreeMain {
                 String[] pieces = line.split(",");
                 Student student = new Student(
                         (long) Long.valueOf(pieces[0]),
-                        (int) Integer.valueOf(pieces[1]),
+                        (int) Integer.valueOf(pieces[4]),
+                        pieces[1],
                         pieces[2],
                         pieces[3],
-                        pieces[4],
                         (long) Long.valueOf(pieces[5]));
                 studentList.add(student);
                 long rId = (long) Long.valueOf(pieces[5]);
@@ -136,7 +136,7 @@ public class BTreeMain {
         // logic
         try {
             FileWriter fWriter = new FileWriter("recordID.txt");
-            fWriter.write((int) (max));
+            fWriter.write(String.valueOf(max));
             fWriter.close();
         } catch (IOException e) {
             System.out.println(e.getMessage());
