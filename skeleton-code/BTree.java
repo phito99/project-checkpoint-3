@@ -92,6 +92,7 @@ class BTree {
         // now need to perform the insert on the leaf node we have identified
         int idx = 0;
         boolean checkParent = false; // variable to determine if need to evaluate the parent inner node
+        boolean createRoot = false; // variable to determine if a new root is needed
 
         // first case, leaf node has space
         if (current.n < maxCapacity) {
@@ -135,12 +136,14 @@ class BTree {
             BTreeNode newNode = new BTreeNode(current.t, true);
             newNode.n = (current.t + 1);
             newNode.parent = current.parent; // attach to the same parent, will need to update parent.children
+            newNode.next = current.next;
+            current.next = newNode;
 
             int increment = 0; // used to help write existing "overflowing" data into new arrays
             // store the existing keys and values to populate into nodes alongside the
             // update
-            long[] bufferKey = current.keys;
-            long[] bufferVal = current.values;
+            long[] bufferKey = current.keys.clone();
+            long[] bufferVal = current.values.clone();
             current.n = current.t; // reduce the number of keys stored in the node to post split value
 
             for (int i = 0; i < (maxCapacity / 2); i++) {
@@ -152,10 +155,12 @@ class BTree {
                     current.keys[i] = bufferKey[i - increment];
                     current.values[i] = bufferVal[i - increment];
                 }
+                current.keys[maxCapacity - 1 - i] = 0;
+                current.values[maxCapacity - 1 - i] = 0;
             }
             // now update the new node, need to adjust the index of where values are set
             // from the buffer
-            for (int i = (maxCapacity / 2); i < maxCapacity; i++) {
+            for (int i = (maxCapacity / 2); i < maxCapacity + 1; i++) {
                 if (i == idx) {
                     newNode.keys[i - (maxCapacity / 2)] = student.studentId;
                     newNode.values[i - (maxCapacity / 2)] = student.recordId;
@@ -165,13 +170,23 @@ class BTree {
                     newNode.values[i - (maxCapacity / 2)] = bufferVal[i - increment];
                 }
             }
-            // now determine if parent nodes need to be corrected
-            if (current.parent.n == maxCapacity) {
+            // now determine if parent nodes need to be corrected or created
+            if (current.parent == null) {
+                // create a new root node and reform the tree
+                createRoot = true;
+                this.root = new BTreeNode(current.t, false);
+                current.parent = this.root;
+                newNode.parent = this.root;
+                this.root.children[0] = current;
+                this.root.children[1] = newNode;
+                this.root.keys[0] = newNode.keys[0];
+                this.root.n = 1;
+            } else if (current.parent.n == maxCapacity) {
                 checkParent = true;
             }
 
-            // update the parent node if there is no overflow
-            if (!checkParent) {
+            // update the parent node if there is no overflow and parent not root
+            if (!checkParent && !createRoot) {
                 long pushedId = newNode.keys[0]; // key to be copied up
                 idx = 0; // reset to find new area to insert
                 for (int i = 0; i < current.parent.n; i++) {
@@ -179,6 +194,9 @@ class BTree {
                         idx++;
                     }
                 }
+
+                idx = (idx - (maxCapacity)) + current.parent.n; // normalize idx
+
                 for (int i = current.parent.keys.length; i >= idx; i--) {
                     current.parent.keys[i] = current.parent.keys[i - 1]; // make space for new key
                     current.parent.children[i + 1] = current.parent.children[i]; // make space for new child node
@@ -272,7 +290,7 @@ class BTree {
 
         // write new student into Student.csv
         try {
-            FileWriter fWriter = new FileWriter("./Student.csv", true);
+            FileWriter fWriter = new FileWriter("skeleton-code/Student.csv", true);
             fWriter.write(student.toCSV());
             fWriter.close();
         } catch (Exception e) {
@@ -310,7 +328,6 @@ class BTree {
         do {
             for (int i = 0; i < current.values.length; i++) {
                 listOfRecordID.add(current.values[i]);
-                System.out.println(current.values[i]);
             }
             current = current.next;
         } while (current != null);
