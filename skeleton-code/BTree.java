@@ -241,11 +241,18 @@ class BTree {
                     checkParent = false;
                 } else if (current.parent.n < maxCapacity) {
                     ArrayList<Long> parentKeys = new ArrayList<>();
+                    int target = 0;
                     for (int i = 0; i < current.parent.n; i++) {
+                        if (pushedId > current.parent.keys[i]) {
+                            target++;
+                        }
                         parentKeys.add(current.parent.keys[i]);
                     }
-                    // TODO finish updating parent node
-
+                    parentKeys.add(target, pushedId);
+                    for (int i = current.parent.children.length; i > target + 1; i--) {
+                        current.parent.children[i] = current.parent.children[i - 1];
+                    }
+                    current.parent.children[target + 1] = newInner;
                     checkParent = false;
                 } else {
                     newNode = newInner;
