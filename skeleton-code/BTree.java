@@ -81,12 +81,11 @@ class BTree {
         while (!current.leaf) {
             int target = 0;
             // this loop will set target to the index of the child node we need to move to
-            for (int i = 0; i < current.keys.length; i++) {
+            for (int i = 0; i < current.n; i++) {
                 if (student.studentId > current.keys[i]) {
                     target++;
                 }
             }
-            target = (target - maxCapacity) + current.n;
             current = current.children[target];
 
         }
@@ -128,7 +127,7 @@ class BTree {
             // second case where leaf is full and need to split
 
             // identify area the new student key fits
-            for (int i = 0; i < current.keys.length; i++) {
+            for (int i = 0; i < current.n; i++) {
                 if (student.studentId > current.keys[i]) {
                     idx++;
                 }
@@ -195,8 +194,6 @@ class BTree {
                         idx++;
                     }
                 }
-
-                // idx = (idx - (maxCapacity)) + current.parent.n; // normalize idx
 
                 for (int i = (current.parent.keys.length - 1); i > idx; i--) {
                     current.parent.keys[i] = current.parent.keys[i - 1]; // make space for new key
@@ -280,6 +277,7 @@ class BTree {
                         current.parent.children[i] = current.parent.children[i - 1];
                     }
                     current.parent.children[target + 1] = newInner;
+                    current.parent.n++;
                     checkParent = false;
                 } else {
                     newNode = newInner;
