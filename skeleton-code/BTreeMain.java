@@ -147,38 +147,43 @@ public class BTreeMain {
     }
 
     public static long generateNextId(BTree bTree) {
-        long output = 0;
-        BTreeNode currNode;
+       // variable declaration
+       int ch;
+       String stream = "";
+       int recID;
 
-        // If root has not been defined, return 1
-        if (bTree.getRoot() == null)
-            output = 1;
-        else {
-            currNode = bTree.getRoot();
+       // check if File exists or not
+       try
+       {
+            FileReader fReader = new FileReader("recordID.txt");
+            // read from FileReader till the end of file
+            while ((ch=fReader.read())!=-1)
+                stream = stream + (char)ch;
 
-            // while current node is not a leaf change the current node to the branch from
-            // the largest key
-            while (!currNode.leaf) {
-
-                for (int i = currNode.keys.length - 1; i >= 0; i--) {
-                    if (currNode.keys[i] != 0) {
-                        currNode = currNode.children[i + 1];
-                        break;
-                    }
-                    // else if(i == 0 && currNode.children[i+1] is not defined)
-                    // currNode=currNode.children[0]
-                }
-            }
-
-            // find the largest value and set output=value+1
-            for (int k = currNode.values.length - 1; k >= 0; k--) {
-                if (currNode.values[k] != 0) {
-                    output = currNode.values[k] + 1;
-                    break;
-                }
-            }
-
+            // close the file
+            fReader.close();
+       }
+       catch (IOException e) {
+            System.out.println(e.getMessage());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
-        return output;
+
+       recID = Integer.parseInt(stream);
+
+       recID++;
+
+       try{
+        FileWriter fWriter = new FileWriter("recordID.txt");
+        fWriter.write((int)(recID));
+        fWriter.close();
+       }
+        catch (IOException e) {
+            System.out.println(e.getMessage());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return recID;
     }
 }
