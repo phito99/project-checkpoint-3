@@ -325,27 +325,40 @@ public class BTree {
 
         int child;
         boolean success;
+        Student removeStud = null;
         try{
             child = this.recurseDelete(this.root,this.root,studentId,0);
-/* 
-            FileWriter fWriter = new FileWriter("Student.csv",false);
+            success = true;
+        } catch(Exception e){
+            System.out.println(e);
+            success = false;
+        }
+
+        try{
+        FileWriter fWriter = new FileWriter("Student.csv",false);
+        fWriter.write("");
+        fWriter.close();
+        }
+        catch(Exception e){
+            System.out.println(e);
+        }
+        try{
+            FileWriter fWriter = new FileWriter("Student.csv",true);
             for(Student s : this.studList){
                 if(s.getStudentID() != studentId){
                     fWriter.write(s.toCSV());
                 }
                 else{
-                    this.studList.remove(s);
+                    removeStud = s;
                 }
             }
             fWriter.close();
-            */
 
-            success = true;
-        } catch(Exception e){
-            System.out.println(e.getMessage());
+            studList.remove(removeStud);
+        } catch(Exception e) {
+            System.out.println(e);
             success = false;
         }
-
 
         return success;
     }
