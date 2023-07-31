@@ -31,8 +31,13 @@ public class Student {
     public String toCSV() {
         String output = "";
         String dl = ",";
-        output = output + this.studentId + dl + this.age + dl + this.studentName + dl + this.major + dl + this.level
-                + dl + this.recordId + "\n";
+        output = "\n" + this.studentId + dl + this.studentName + dl + this.major + dl + this.level + dl + this.age
+                + dl + this.recordId;
         return output;
+    }
+
+    //Student ID accessor function
+    public long getStudentID(){
+        return this.studentId;
     }
 }

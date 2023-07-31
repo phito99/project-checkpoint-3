@@ -18,7 +18,7 @@ public class BTreeMain {
         /** Read the input file -- input.txt */
         Scanner scan = null;
         try {
-            scan = new Scanner(new File("src/input.txt"));
+            scan = new Scanner(new File("skeleton-code/input.txt"));
         } catch (FileNotFoundException e) {
             System.out.println("File not found.");
         }
@@ -27,10 +27,11 @@ public class BTreeMain {
 
         int degree = scan.nextInt();
 
-        BTree bTree = new BTree(degree);
 
         /** Reading the database student.csv into B+Tree Node */
         List<Student> studentsDB = getStudents();
+        
+        BTree bTree = new BTree(degree,studentsDB);
 
         for (Student s : studentsDB) {
             bTree.insert(s);
@@ -152,27 +153,24 @@ public class BTreeMain {
        String stream = "";
        long recID;
 
-       // check if File exists or not
-       try
-       {
+        // check if File exists or not
+        try {
             FileReader fReader = new FileReader("recordID.txt");
             // read from FileReader till the end of file
-            while ((ch=fReader.read())!=-1)
-                stream = stream + (char)ch;
+            while ((ch = fReader.read()) != -1)
+                stream = stream + (char) ch;
 
             // close the file
             fReader.close();
-       }
-       catch (IOException e) {
+        } catch (IOException e) {
             System.out.println(e.getMessage());
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
 
-        System.out.println(stream);
        recID = Long.parseLong(stream);
 
-       recID++;
+        recID++;
 
        try{
         FileWriter fWriter = new FileWriter("recordID.txt");
