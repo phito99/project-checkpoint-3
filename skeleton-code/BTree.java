@@ -108,13 +108,13 @@ public class BTree {
             long[] newKeys = new long[2 * t];
             long[] newVals = new long[2 * t];
 
-            for (int i = 0; i < current.keys.length; i++) {
+            for (int i = 0; i < current.n; i++) {
                 if (student.studentId > current.keys[i]) {
                     idx++;
                 }
             }
             // arrays are initialized to 0 so need to normalize
-            idx = (idx - (maxCapacity)) + current.n;
+            // idx = (idx - (maxCapacity)) + current.n;
 
             for (int i = 0; i < idx; i++) {
                 newKeys[i] = current.keys[i];
